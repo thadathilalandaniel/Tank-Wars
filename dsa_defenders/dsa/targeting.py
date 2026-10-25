@@ -1,22 +1,12 @@
 """
 dsa_defenders/dsa/targeting.py
 
-# DSA CONCEPT: TARGETING DISPATCHER & ALGORITHM COMPARISON
-# ==============================================================================
-# This module acts as the central algorithmic dispatcher for the tower's targeting system.
-# It maintains the active targeting mode (QUEUE, PRIORITY_QUEUE, GREEDY), keeps data
-# structures synchronized with enemy lifecycle events (spawn/death), and coordinates
-# real-time queries for combat and UI inspection.
-#
-# STRICT RULE: This file is purely algorithmic and DOES NOT import pygame.
-#
-# Modules that interact with this:
-# - dsa/queue_ds.py (FIFO Queue)
-# - dsa/priority_queue.py (Binary Max-Heap)
-# - dsa/greedy_targeting.py (Greedy Nearest Neighbor)
-# - game/combat.py (queries select_target)
-# - ui/algorithm_lab.py (queries get_inspection_stats)
-# ==============================================================================
+Central algorithmic dispatcher coordinating the tower's targeting system:
+1. QUEUE (FIFO): Targets the vanguard hostile (earliest arrival in arena).
+2. PRIORITY QUEUE (Max-Heap): Targets the highest computed threat score.
+3. GREEDY: Targets the nearest hostile by Euclidean distance.
+
+Note: This module is purely algorithmic and contains zero Pygame dependencies.
 """
 
 import math
@@ -31,9 +21,9 @@ MODE_GREEDY = "GREEDY"
 
 class TargetingDispatcher:
     """
-    Coordinates and switches between the three data structures / algorithms:
+    Coordinates and switches between the three targeting strategies:
       1. FIFO Queue (Earliest arrival)
-      2. Binary Max-Heap (Highest dynamic threat score)
+      2. Binary Max-Heap (Highest composite threat score)
       3. Greedy Algorithm (Nearest Euclidean distance)
     """
 
@@ -50,15 +40,15 @@ class TargetingDispatcher:
             self.mode = new_mode
 
     def on_enemy_spawned(self, enemy) -> None:
-        """Notify data structures when a new enemy arrives in the arena."""
+        """Enqueue newly spawned hostile to preserve arrival order."""
         self.queue.enqueue(enemy)
 
     def on_enemy_removed(self, enemy) -> None:
-        """Notify data structures when an enemy is destroyed or despawned."""
+        """Remove destroyed or despawned hostile from active queue."""
         self.queue.remove(enemy)
 
     def clear(self) -> None:
-        """Reset all data structures (e.g. between waves or on game restart)."""
+        """Reset internal data structures between waves or on game restart."""
         self.queue.clear()
         self.heap.clear()
         self.last_selected_target = None
@@ -66,10 +56,8 @@ class TargetingDispatcher:
 
     def select_target(self, tower_x: float, tower_y: float, tower_range: float, alive_enemies: list):
         """
-        Select the target enemy according to the active algorithm.
-        
-        Returns:
-            enemy or None
+        Select an eligible hostile target based on the active strategy.
+        Returns the chosen Enemy object, or None if no valid in-range target exists.
         """
         if not alive_enemies:
             self.last_selected_target = None
@@ -230,3 +218,4 @@ class TargetingDispatcher:
             stats["rule"] = "Greedy Local Optimum: attacks closest in-range enemy."
 
         return stats
+

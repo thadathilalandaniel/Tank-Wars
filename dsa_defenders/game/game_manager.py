@@ -1,17 +1,12 @@
 """
 dsa_defenders/game/game_manager.py
 
-This module contains the master GameManager class.
-It orchestrates the entire application lifecycle:
+Master GameManager orchestrating the application lifecycle:
 - High-level State Machine (Menu, Wave Select, Playing, Paused, Wave Complete, Game Over, Victory)
-- Real-time game loop with delta-time calculation
-- Game speed scaling (1x, 2x, 3x) that scales delta time without distorting FPS
+- 60 FPS real-time game loop with delta-time calculation
+- Game speed scaling (1x, 2x, 3x) that scales delta time without distorting frame rate
 - Input routing (keyboard, mouse drag, buttons, shortcuts)
 - Subsystem synchronization (Combat, Waves, Targeting/DSA, Upgrades, Economy, Sound, UI)
-
-Modules that interact with this:
-- main.py (instantiates and runs GameManager)
-- All game/*, dsa/*, entities/*, systems/*, and ui/* modules
 """
 
 import sys
@@ -46,7 +41,7 @@ from ui.algorithm_lab import AlgorithmLabPanel
 
 
 class GameManager:
-    """The central controller managing all game states, loops, and subsystem integration."""
+    """Central controller managing game states, loops, and subsystem integration."""
 
     STATE_MENU = "MENU"
     STATE_WAVE_SELECT = "WAVE_SELECT"
