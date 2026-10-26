@@ -1,7 +1,7 @@
 """
 tests/smoke_sim.py
 
-Headless smoke simulation test for DSA Defenders.
+Headless smoke simulation test for Defense Defenders.
 Runs the game headless (SDL_VIDEODRIVER=dummy, SDL_AUDIODRIVER=dummy) for several
 thousand frames, simulating:
 - Wave starts and progression
@@ -20,7 +20,7 @@ import sys
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 os.environ["SDL_AUDIODRIVER"] = "dummy"
 
-PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "dsa_defenders"))
+PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "defense_defenders"))
 if PROJECT_DIR not in sys.path:
     sys.path.insert(0, PROJECT_DIR)
 

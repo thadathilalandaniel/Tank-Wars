@@ -4,7 +4,7 @@
 
 Tank Wars is a 2D tower defense game built using Python and Pygame. Defend your base against waves of increasingly dangerous enemies, upgrade your tank, manage resources, and experiment with different enemy-targeting algorithms.
 
-The game combines arcade-style combat with practical implementations of fundamental Data Structures and Algorithms (DSA), making it both entertaining and educational.
+The game combines arcade-style combat with practical implementations of fundamental Data Structures and Algorithms (Defense), making it both entertaining and educational.
 
 ## ✨ Features
 
@@ -32,7 +32,7 @@ The game combines arcade-style combat with practical implementations of fundamen
 
 ### 🧠 Data Structures and Algorithms
 
-Tank Wars integrates DSA directly into its combat system.
+Tank Wars integrates Defense directly into its combat system.
 
 | Concept | Application |
 |---|---|
@@ -61,7 +61,7 @@ Switching targeting modes changes how the tank selects enemies. The game also in
 
 - **Language:** Python
 - **Game Framework:** Pygame
-- **DSA:** Queue, Binary Max-Heap, Greedy Target Selection
+- **Defense:** Queue, Binary Max-Heap, Greedy Target Selection
 - **Graphics:** Pygame shapes, text, and animations
 - **Testing:** Python testing tools
 
@@ -73,7 +73,7 @@ Tank-Wars/
 ├── config.py
 ├── requirements.txt
 ├── README.md
-├── dsa/
+├── defense/
 │   ├── queue_ds.py
 │   ├── priority_queue.py
 │   ├── greedy_targeting.py
@@ -149,7 +149,7 @@ python main.py
 
 ## 📚 Learning Objectives
 
-Tank Wars demonstrates how DSA concepts can be applied to a practical application.
+Tank Wars demonstrates how Defense concepts can be applied to a practical application.
 
 - Understand FIFO behaviour through Queue-based targeting.
 - Learn how a binary max-heap maintains priorities.
