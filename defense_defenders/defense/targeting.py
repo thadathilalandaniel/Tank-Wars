@@ -1,14 +1,3 @@
-"""
-defense_defenders/defense/targeting.py
-
-Central algorithmic dispatcher coordinating the tower's targeting system:
-1. QUEUE (FIFO): Targets the vanguard hostile (earliest arrival in arena).
-2. PRIORITY QUEUE (Max-Heap): Targets the highest computed threat score.
-3. GREEDY: Targets the nearest hostile by Euclidean distance.
-
-Note: This module is purely algorithmic and contains zero Pygame dependencies.
-"""
-
 import math
 from defense.queue_ds import Queue
 from defense.priority_queue import MaxHeap, calculate_threat
@@ -20,13 +9,6 @@ MODE_GREEDY = "GREEDY"
 
 
 class TargetingDispatcher:
-    """
-    Coordinates and switches between the three targeting strategies:
-      1. FIFO Queue (Earliest arrival)
-      2. Binary Max-Heap (Highest composite threat score)
-      3. Greedy Algorithm (Nearest Euclidean distance)
-    """
-
     def __init__(self, initial_mode: str = MODE_QUEUE):
         self.mode = initial_mode
         self.queue = Queue()
@@ -35,30 +17,21 @@ class TargetingDispatcher:
         self.last_calculated_metric = None
 
     def set_mode(self, new_mode: str) -> None:
-        """Switch active targeting mode between QUEUE, PRIORITY_QUEUE, and GREEDY."""
         if new_mode in (MODE_QUEUE, MODE_PRIORITY_QUEUE, MODE_GREEDY):
             self.mode = new_mode
 
     def on_enemy_spawned(self, enemy) -> None:
-        """Enqueue newly spawned hostile to preserve arrival order."""
         self.queue.enqueue(enemy)
 
     def on_enemy_removed(self, enemy) -> None:
-        """Remove destroyed or despawned hostile from active queue."""
         self.queue.remove(enemy)
 
     def clear(self) -> None:
-        """Reset internal data structures between waves or on game restart."""
-        self.queue.clear()
         self.heap.clear()
         self.last_selected_target = None
         self.last_calculated_metric = None
 
     def select_target(self, tower_x: float, tower_y: float, tower_range: float, alive_enemies: list):
-        """
-        Select an eligible hostile target based on the active strategy.
-        Returns the chosen Enemy object, or None if no valid in-range target exists.
-        """
         if not alive_enemies:
             self.last_selected_target = None
             self.last_calculated_metric = None
@@ -66,19 +39,14 @@ class TargetingDispatcher:
 
         range_sq = tower_range * tower_range
 
-        # -------------------------------------------------------------
-        # 1. FIFO QUEUE TARGETING
-        # -------------------------------------------------------------
         if self.mode == MODE_QUEUE:
             target = None
-            # Scan queue elements in FIFO order (head to tail)
             active_items = self.queue.to_list()
             for enemy in active_items:
                 if not getattr(enemy, "is_alive", lambda: True)():
                     self.queue.remove(enemy)
                     continue
                 
-                # Check if this alive enemy is within tower attack range
                 dx = enemy.x - tower_x
                 dy = enemy.y - tower_y
                 dist_sq = dx * dx + dy * dy
@@ -90,11 +58,8 @@ class TargetingDispatcher:
             self.last_selected_target = target
             return target
 
-        # -------------------------------------------------------------
-        # 2. BINARY MAX-HEAP (PRIORITY QUEUE) TARGETING
-        # -------------------------------------------------------------
+
         elif self.mode == MODE_PRIORITY_QUEUE:
-            # Rebuild the heap in O(n) using Floyd's algorithm with fresh threat scores
             heap_entries = []
             for enemy in alive_enemies:
                 if getattr(enemy, "is_alive", lambda: True)():
@@ -106,7 +71,6 @@ class TargetingDispatcher:
             target = None
             skipped_entries = []
 
-            # Extract elements from highest to lowest threat
             while not self.heap.is_empty():
                 threat, enemy = self.heap.extract_max()
                 if not getattr(enemy, "is_alive", lambda: True)():
@@ -123,16 +87,12 @@ class TargetingDispatcher:
                 else:
                     skipped_entries.append((threat, enemy))
 
-            # Re-insert skipped out-of-range entries
             for entry in skipped_entries:
                 self.heap.insert(entry[0], entry[1])
 
             self.last_selected_target = target
             return target
 
-        # -------------------------------------------------------------
-        # 3. GREEDY NEAREST-ENEMY TARGETING
-        # -------------------------------------------------------------
         elif self.mode == MODE_GREEDY:
             target, dist = find_nearest_enemy(tower_x, tower_y, tower_range, alive_enemies)
             self.last_selected_target = target
