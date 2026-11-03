@@ -57,6 +57,8 @@ class WaveManager:
 
     def is_wave_unlocked(self, wave_num: int) -> bool:
         """Check if a specific wave is accessible."""
+        if not (1 <= wave_num <= self.total_waves):
+            return False
         if UNLOCK_ALL_WAVES:
             return True
         return 1 <= wave_num <= self.highest_unlocked_wave
@@ -156,6 +158,13 @@ class WaveManager:
             if self.current_wave >= self.total_waves:
                 self.all_completed = True
 
+            return True
+        return False
+
+    def switch_to_prev_wave(self) -> bool:
+        """Switch to the previous wave if available."""
+        if self.current_wave > 1:
+            self.current_wave -= 1
             return True
         return False
 

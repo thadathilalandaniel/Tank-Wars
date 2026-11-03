@@ -76,25 +76,31 @@ class MenuManager:
 
     def _init_pause_menu(self) -> None:
         cx = SCREEN_WIDTH // 2
-        self.pause_resume_btn = Button(cx - 110, 260, 220, 46, text="RESUME [P]", font_size=18,
+        self.pause_resume_btn = Button(cx - 110, 248, 220, 44, text="RESUME [P]", font_size=18,
                                        bg_color=(46, 125, 50), hover_color=(67, 160, 71),
                                        callback=self.callbacks.get("resume"))
-        self.pause_restart_btn = Button(cx - 110, 320, 220, 46, text="RESTART WAVE [R]", font_size=16,
+        self.pause_waves_btn = Button(cx - 110, 302, 220, 42, text="SELECT WAVE", font_size=16,
+                                      bg_color=(25, 118, 210), hover_color=(30, 136, 229),
+                                      callback=self.callbacks.get("wave_select"))
+        self.pause_restart_btn = Button(cx - 110, 354, 220, 42, text="RESTART WAVE [R]", font_size=16,
                                         bg_color=(239, 108, 0), hover_color=(245, 124, 0),
                                         callback=self.callbacks.get("restart"))
-        self.pause_menu_btn = Button(cx - 110, 380, 220, 46, text="MAIN MENU", font_size=16,
+        self.pause_menu_btn = Button(cx - 110, 406, 220, 42, text="MAIN MENU", font_size=16,
                                      bg_color=(55, 71, 79), hover_color=(69, 90, 100),
                                      callback=self.callbacks.get("menu"))
 
     def _init_wave_complete(self) -> None:
         cx = SCREEN_WIDTH // 2
-        self.wc_next_btn = Button(cx - 120, 340, 240, 50, text="NEXT WAVE", font_size=18,
+        self.wc_next_btn = Button(cx - 120, 325, 240, 46, text="NEXT WAVE", font_size=18,
                                   bg_color=(46, 125, 50), hover_color=(67, 160, 71),
                                   callback=self.callbacks.get("next_wave"))
-        self.wc_replay_btn = Button(cx - 120, 405, 240, 44, text="REPLAY WAVE", font_size=16,
-                                    bg_color=(25, 118, 210), hover_color=(30, 136, 229),
+        self.wc_waves_btn = Button(cx - 120, 380, 240, 42, text="SELECT WAVE", font_size=16,
+                                   bg_color=(25, 118, 210), hover_color=(30, 136, 229),
+                                   callback=self.callbacks.get("wave_select"))
+        self.wc_replay_btn = Button(cx - 120, 432, 240, 42, text="REPLAY WAVE", font_size=16,
+                                    bg_color=(239, 108, 0), hover_color=(245, 124, 0),
                                     callback=self.callbacks.get("restart"))
-        self.wc_menu_btn = Button(cx - 120, 460, 240, 44, text="MAIN MENU", font_size=16,
+        self.wc_menu_btn = Button(cx - 120, 484, 240, 42, text="MAIN MENU", font_size=16,
                                   bg_color=(55, 71, 79), hover_color=(69, 90, 100),
                                   callback=self.callbacks.get("menu"))
 
@@ -112,10 +118,13 @@ class MenuManager:
 
     def _init_victory(self) -> None:
         cx = SCREEN_WIDTH // 2
-        self.vic_play_again_btn = Button(cx - 130, 420, 260, 52, text="PLAY AGAIN", font_size=18,
+        self.vic_play_again_btn = Button(cx - 130, 395, 260, 48, text="PLAY AGAIN", font_size=18,
                                          bg_color=(46, 125, 50), hover_color=(67, 160, 71),
                                          callback=self.callbacks.get("play"))
-        self.vic_menu_btn = Button(cx - 130, 485, 260, 46, text="MAIN MENU", font_size=16,
+        self.vic_waves_btn = Button(cx - 130, 452, 260, 44, text="SELECT WAVE", font_size=16,
+                                    bg_color=(25, 118, 210), hover_color=(30, 136, 229),
+                                    callback=self.callbacks.get("wave_select"))
+        self.vic_menu_btn = Button(cx - 130, 506, 260, 44, text="MAIN MENU", font_size=16,
                                    bg_color=(55, 71, 79), hover_color=(69, 90, 100),
                                    callback=self.callbacks.get("menu"))
 
@@ -177,7 +186,7 @@ class MenuManager:
         title_surf = f_title.render("SELECT DEFENSE WAVE", True, (255, 215, 0))
         surface.blit(title_surf, title_surf.get_rect(center=(SCREEN_WIDTH // 2, 65)))
 
-        hint_surf = f_hint.render("Clear each wave to unlock the next. Waves marked with * are Boss Battles!", True, (180, 210, 240))
+        hint_surf = f_hint.render("Choose any of the 40 defense waves to play! Waves marked with * are Boss Battles.", True, (180, 210, 240))
         surface.blit(hint_surf, hint_surf.get_rect(center=(SCREEN_WIDTH // 2, 105)))
 
         for i, btn in enumerate(self.wave_buttons, start=1):
@@ -188,20 +197,21 @@ class MenuManager:
         self.wave_back_btn.draw(surface, font_cache)
 
     def draw_pause(self, surface: pygame.Surface, font_cache: dict) -> None:
-        modal_rect = pygame.Rect(SCREEN_WIDTH // 2 - 160, 180, 320, 280)
+        modal_rect = pygame.Rect(SCREEN_WIDTH // 2 - 160, 168, 320, 298)
         pygame.draw.rect(surface, (20, 32, 50), modal_rect, border_radius=14)
         pygame.draw.rect(surface, (0, 229, 255), modal_rect, width=2, border_radius=14)
 
         f_title = font_cache.get(26, pygame.font.SysFont("arial", 26, bold=True))
         t_surf = f_title.render("GAME PAUSED", True, (255, 215, 0))
-        surface.blit(t_surf, t_surf.get_rect(center=(SCREEN_WIDTH // 2, 220)))
+        surface.blit(t_surf, t_surf.get_rect(center=(SCREEN_WIDTH // 2, 208)))
 
         self.pause_resume_btn.draw(surface, font_cache)
+        self.pause_waves_btn.draw(surface, font_cache)
         self.pause_restart_btn.draw(surface, font_cache)
         self.pause_menu_btn.draw(surface, font_cache)
 
     def draw_wave_complete(self, surface: pygame.Surface, font_cache: dict, wave_num: int, reward: int) -> None:
-        modal_rect = pygame.Rect(SCREEN_WIDTH // 2 - 180, 160, 360, 370)
+        modal_rect = pygame.Rect(SCREEN_WIDTH // 2 - 180, 145, 360, 400)
         pygame.draw.rect(surface, (20, 35, 55), modal_rect, border_radius=14)
         pygame.draw.rect(surface, (76, 175, 80), modal_rect, width=2, border_radius=14)
 
@@ -209,16 +219,17 @@ class MenuManager:
         f_sub = font_cache.get(16, pygame.font.SysFont("arial", 16))
 
         t_surf = f_title.render(f"WAVE {wave_num} CLEARED!", True, (76, 175, 80))
-        surface.blit(t_surf, t_surf.get_rect(center=(SCREEN_WIDTH // 2, 210)))
+        surface.blit(t_surf, t_surf.get_rect(center=(SCREEN_WIDTH // 2, 195)))
 
         sub_surf = f_sub.render(f"Sector successfully defended!", True, COLOR_TEXT_WHITE)
-        surface.blit(sub_surf, sub_surf.get_rect(center=(SCREEN_WIDTH // 2, 250)))
+        surface.blit(sub_surf, sub_surf.get_rect(center=(SCREEN_WIDTH // 2, 235)))
 
         # Coin reward badge
         reward_surf = f_sub.render(f"Wave Reward: +{reward} Coins", True, COLOR_COIN_GOLD)
-        surface.blit(reward_surf, reward_surf.get_rect(center=(SCREEN_WIDTH // 2, 285)))
+        surface.blit(reward_surf, reward_surf.get_rect(center=(SCREEN_WIDTH // 2, 270)))
 
         self.wc_next_btn.draw(surface, font_cache)
+        self.wc_waves_btn.draw(surface, font_cache)
         self.wc_replay_btn.draw(surface, font_cache)
         self.wc_menu_btn.draw(surface, font_cache)
 
@@ -243,7 +254,7 @@ class MenuManager:
         self.go_menu_btn.draw(surface, font_cache)
 
     def draw_victory(self, surface: pygame.Surface, font_cache: dict, total_kills: int, total_coins: int) -> None:
-        modal_rect = pygame.Rect(SCREEN_WIDTH // 2 - 210, 150, 420, 410)
+        modal_rect = pygame.Rect(SCREEN_WIDTH // 2 - 210, 135, 420, 440)
         pygame.draw.rect(surface, (20, 35, 60), modal_rect, border_radius=16)
         pygame.draw.rect(surface, (255, 215, 0), modal_rect, width=3, border_radius=16)
 
@@ -251,15 +262,16 @@ class MenuManager:
         f_sub = font_cache.get(16, pygame.font.SysFont("arial", 16))
 
         t_surf = f_title.render("SYSTEM VICTORIOUS!", True, (255, 215, 0))
-        surface.blit(t_surf, t_surf.get_rect(center=(SCREEN_WIDTH // 2, 205)))
+        surface.blit(t_surf, t_surf.get_rect(center=(SCREEN_WIDTH // 2, 185)))
 
         sub_surf = f_sub.render("All 40 Defense Waves Successfully Mastered!", True, (130, 220, 255))
-        surface.blit(sub_surf, sub_surf.get_rect(center=(SCREEN_WIDTH // 2, 250)))
+        surface.blit(sub_surf, sub_surf.get_rect(center=(SCREEN_WIDTH // 2, 230)))
 
         k_surf = f_sub.render(f"Total Robotic Hostiles Defeated: {total_kills}", True, COLOR_TEXT_WHITE)
         c_surf = f_sub.render(f"Total Defense Budget Earned: {total_coins} Coins", True, COLOR_COIN_GOLD)
-        surface.blit(k_surf, k_surf.get_rect(center=(SCREEN_WIDTH // 2, 300)))
-        surface.blit(c_surf, c_surf.get_rect(center=(SCREEN_WIDTH // 2, 335)))
+        surface.blit(k_surf, k_surf.get_rect(center=(SCREEN_WIDTH // 2, 280)))
+        surface.blit(c_surf, c_surf.get_rect(center=(SCREEN_WIDTH // 2, 315)))
 
         self.vic_play_again_btn.draw(surface, font_cache)
+        self.vic_waves_btn.draw(surface, font_cache)
         self.vic_menu_btn.draw(surface, font_cache)

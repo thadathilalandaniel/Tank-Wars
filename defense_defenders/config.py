@@ -247,6 +247,6 @@ SPEED_3X = 3.0
 # DEBUG & TESTING FLAGS
 # ---------------------------------------------------------
 # Set to True to unlock all 40 waves immediately in the wave select screen
-UNLOCK_ALL_WAVES = False
+UNLOCK_ALL_WAVES = True
 # Start wave override (1 to 40)
 START_WAVE_OVERRIDE = 1

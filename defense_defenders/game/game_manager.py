@@ -108,6 +108,9 @@ class GameManager:
             "on_speed": self.cycle_speed,
             "on_mode_change": self.set_targeting_mode,
             "on_lab_toggle": self.toggle_algo_lab,
+            "on_prev_wave": self.advance_prev_wave,
+            "on_next_wave": self.advance_next_wave,
+            "on_wave_select": lambda: self.set_state(self.STATE_WAVE_SELECT),
         }
         self.hud = HUD(**hud_callbacks)
 
@@ -138,6 +141,11 @@ class GameManager:
     def select_and_start_wave(self, wave_num: int) -> None:
         """Select a specific wave and begin gameplay."""
         if self.wave_manager.set_wave(wave_num):
+            self.start_game()
+
+    def advance_prev_wave(self) -> None:
+        """Progress to the previous wave."""
+        if self.wave_manager.switch_to_prev_wave():
             self.start_game()
 
     def advance_next_wave(self) -> None:
@@ -253,6 +261,12 @@ class GameManager:
                 elif event.key == pygame.K_r:
                     if self.state in (self.STATE_PLAYING, self.STATE_PAUSED, self.STATE_GAME_OVER, self.STATE_WAVE_COMPLETE):
                         self.restart_wave()
+                elif event.key == pygame.K_LEFTBRACKET:
+                    if self.state in (self.STATE_PLAYING, self.STATE_PAUSED, self.STATE_WAVE_COMPLETE):
+                        self.advance_prev_wave()
+                elif event.key == pygame.K_RIGHTBRACKET:
+                    if self.state in (self.STATE_PLAYING, self.STATE_PAUSED, self.STATE_WAVE_COMPLETE):
+                        self.advance_next_wave()
 
             # State-specific event handling
             if self.state == self.STATE_PLAYING:
@@ -287,11 +301,11 @@ class GameManager:
                 self.menus.wave_back_btn.handle_event(event)
 
             elif self.state == self.STATE_PAUSED:
-                for btn in (self.menus.pause_resume_btn, self.menus.pause_restart_btn, self.menus.pause_menu_btn):
+                for btn in (self.menus.pause_resume_btn, self.menus.pause_waves_btn, self.menus.pause_restart_btn, self.menus.pause_menu_btn):
                     btn.handle_event(event)
 
             elif self.state == self.STATE_WAVE_COMPLETE:
-                for btn in (self.menus.wc_next_btn, self.menus.wc_replay_btn, self.menus.wc_menu_btn):
+                for btn in (self.menus.wc_next_btn, self.menus.wc_waves_btn, self.menus.wc_replay_btn, self.menus.wc_menu_btn):
                     btn.handle_event(event)
 
             elif self.state == self.STATE_GAME_OVER:
@@ -299,7 +313,7 @@ class GameManager:
                     btn.handle_event(event)
 
             elif self.state == self.STATE_VICTORY:
-                for btn in (self.menus.vic_play_again_btn, self.menus.vic_menu_btn):
+                for btn in (self.menus.vic_play_again_btn, self.menus.vic_waves_btn, self.menus.vic_menu_btn):
                     btn.handle_event(event)
 
     # -------------------------------------------------------------
@@ -395,11 +409,11 @@ class GameManager:
             self.menus.wave_back_btn.update_hover(mouse_pos)
 
         elif self.state == self.STATE_PAUSED:
-            for btn in (self.menus.pause_resume_btn, self.menus.pause_restart_btn, self.menus.pause_menu_btn):
+            for btn in (self.menus.pause_resume_btn, self.menus.pause_waves_btn, self.menus.pause_restart_btn, self.menus.pause_menu_btn):
                 btn.update_hover(mouse_pos)
 
         elif self.state == self.STATE_WAVE_COMPLETE:
-            for btn in (self.menus.wc_next_btn, self.menus.wc_replay_btn, self.menus.wc_menu_btn):
+            for btn in (self.menus.wc_next_btn, self.menus.wc_waves_btn, self.menus.wc_replay_btn, self.menus.wc_menu_btn):
                 btn.update_hover(mouse_pos)
 
         elif self.state == self.STATE_GAME_OVER:
@@ -407,7 +421,7 @@ class GameManager:
                 btn.update_hover(mouse_pos)
 
         elif self.state == self.STATE_VICTORY:
-            for btn in (self.menus.vic_play_again_btn, self.menus.vic_menu_btn):
+            for btn in (self.menus.vic_play_again_btn, self.menus.vic_waves_btn, self.menus.vic_menu_btn):
                 btn.update_hover(mouse_pos)
 
     # -------------------------------------------------------------

@@ -42,13 +42,17 @@ class HUD:
     """Manages HUD rendering, life counters, coins, and top control widgets."""
 
     def __init__(self, on_home=None, on_pause=None, on_sound=None, on_speed=None,
-                 on_mode_change=None, on_lab_toggle=None):
+                 on_mode_change=None, on_lab_toggle=None,
+                 on_prev_wave=None, on_next_wave=None, on_wave_select=None):
         self.on_home = on_home
         self.on_pause = on_pause
         self.on_sound = on_sound
         self.on_speed = on_speed
         self.on_mode_change = on_mode_change
         self.on_lab_toggle = on_lab_toggle
+        self.on_prev_wave = on_prev_wave
+        self.on_next_wave = on_next_wave
+        self.on_wave_select = on_wave_select
 
         # Top Control Buttons
         self.btn_home = Button(SCREEN_WIDTH - 210, 16, 42, 36, text="Home", font_size=12,
@@ -70,10 +74,23 @@ class HUD:
         self.btn_lab = Button(296, 16, 95, 36, text="[L] Algo Lab", font_size=12,
                               bg_color=(80, 45, 120), hover_color=(110, 60, 165), callback=on_lab_toggle)
 
+        # Level Switcher Controls (Center HUD)
+        self.btn_prev_wave = Button(SCREEN_WIDTH // 2 - 145, 14, 38, 40, text="<", font_size=16,
+                                    bg_color=(25, 45, 75), hover_color=(40, 70, 115),
+                                    callback=on_prev_wave)
+        self.btn_wave_pill = Button(SCREEN_WIDTH // 2 - 100, 14, 200, 40, text="", font_size=18,
+                                    bg_color=(20, 32, 54), hover_color=(32, 52, 85),
+                                    border_color=(70, 110, 170), border_radius=20,
+                                    callback=on_wave_select)
+        self.btn_next_wave = Button(SCREEN_WIDTH // 2 + 107, 14, 38, 40, text=">", font_size=16,
+                                    bg_color=(25, 45, 75), hover_color=(40, 70, 115),
+                                    callback=on_next_wave)
+
     def handle_event(self, event) -> bool:
         """Handle clicks on HUD buttons. Returns True if consumed."""
         for btn in (self.btn_home, self.btn_sound, self.btn_pause, self.btn_speed,
-                    self.btn_mode_q, self.btn_mode_heap, self.btn_mode_greedy, self.btn_lab):
+                    self.btn_mode_q, self.btn_mode_heap, self.btn_mode_greedy, self.btn_lab,
+                    self.btn_prev_wave, self.btn_wave_pill, self.btn_next_wave):
             if btn.handle_event(event):
                 return True
         return False
@@ -81,7 +98,8 @@ class HUD:
     def update(self, mouse_pos) -> None:
         """Update hover states."""
         for btn in (self.btn_home, self.btn_sound, self.btn_pause, self.btn_speed,
-                    self.btn_mode_q, self.btn_mode_heap, self.btn_mode_greedy, self.btn_lab):
+                    self.btn_mode_q, self.btn_mode_heap, self.btn_mode_greedy, self.btn_lab,
+                    self.btn_prev_wave, self.btn_wave_pill, self.btn_next_wave):
             btn.update_hover(mouse_pos)
 
     def draw(self, surface: pygame.Surface, font_cache: dict, wave_num: int, total_waves: int,
@@ -94,16 +112,15 @@ class HUD:
         pygame.draw.line(surface, COLOR_HUD_BORDER, (0, 68), (SCREEN_WIDTH, 68), 2)
 
         # -------------------------------------------------------------
-        # 1. WAVE INDICATOR (Center Pill)
+        # 1. WAVE INDICATOR & SWITCHER (Center Controls)
         # -------------------------------------------------------------
-        wave_pill_rect = pygame.Rect(SCREEN_WIDTH // 2 - 100, 14, 200, 40)
-        pygame.draw.rect(surface, (20, 32, 54), wave_pill_rect, border_radius=20)
-        pygame.draw.rect(surface, (70, 110, 170), wave_pill_rect, width=2, border_radius=20)
+        self.btn_prev_wave.is_enabled = (wave_num > 1)
+        self.btn_next_wave.is_enabled = (wave_num < total_waves)
+        self.btn_wave_pill.text = f"WAVE {wave_num} / {total_waves}"
 
-        wave_font = get_font(font_cache, 18, bold=True)
-        wave_text = f"WAVE {wave_num} / {total_waves}"
-        wave_surf = wave_font.render(wave_text, True, COLOR_TEXT_WHITE)
-        surface.blit(wave_surf, wave_surf.get_rect(center=wave_pill_rect.center))
+        self.btn_prev_wave.draw(surface, font_cache)
+        self.btn_wave_pill.draw(surface, font_cache)
+        self.btn_next_wave.draw(surface, font_cache)
 
         # -------------------------------------------------------------
         # 2. TARGETING MODE BUTTONS (Highlighted active state)
@@ -131,7 +148,7 @@ class HUD:
         # -------------------------------------------------------------
         # 4. COIN COUNTER PILL (Right-Center)
         # -------------------------------------------------------------
-        coin_pill_rect = pygame.Rect(SCREEN_WIDTH // 2 + 120, 18, 120, 32)
+        coin_pill_rect = pygame.Rect(805, 18, 120, 32)
         pygame.draw.rect(surface, (15, 24, 40), coin_pill_rect, border_radius=16)
         pygame.draw.rect(surface, (200, 160, 0), coin_pill_rect, width=2, border_radius=16)
 

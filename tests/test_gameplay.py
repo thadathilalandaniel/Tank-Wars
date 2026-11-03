@@ -215,6 +215,71 @@ class TestGameplayRequirements(unittest.TestCase):
         self.game.cycle_speed()
         self.assertEqual(self.game.game_speed, SPEED_1X)
 
+    def test_item_9_all_40_levels_unlocked_and_easy_switching(self):
+        """9. All 40 levels are immediately unlocked and user can switch between them easily."""
+        wm = self.game.wave_manager
+
+        # 1. Verify all 40 levels are unlocked initially without playing one after the other
+        for w in range(1, 41):
+            self.assertTrue(wm.is_wave_unlocked(w), f"Wave {w} should be unlocked immediately!")
+        self.assertFalse(wm.is_wave_unlocked(0), "Wave 0 should be invalid/locked")
+        self.assertFalse(wm.is_wave_unlocked(41), "Wave 41 should be invalid/locked")
+
+        # 2. Directly switch to an arbitrary level without playing earlier ones
+        self.game.select_and_start_wave(25)
+        self.assertEqual(wm.current_wave, 25)
+        self.assertEqual(self.game.state, GameManager.STATE_PLAYING)
+
+        # 3. Step forward and backward using advance_next_wave and advance_prev_wave
+        self.game.advance_next_wave()
+        self.assertEqual(wm.current_wave, 26)
+        self.game.advance_prev_wave()
+        self.assertEqual(wm.current_wave, 25)
+
+        # 4. Jump directly to wave 1 and verify boundary check on prev wave
+        self.game.select_and_start_wave(1)
+        self.assertEqual(wm.current_wave, 1)
+        self.game.advance_prev_wave()
+        self.assertEqual(wm.current_wave, 1, "Should stay on wave 1 when trying to go below wave 1")
+
+        # 5. Jump directly to wave 40 and verify victory when advancing beyond wave 40
+        self.game.select_and_start_wave(40)
+        self.assertEqual(wm.current_wave, 40)
+        self.game.advance_next_wave()
+        self.assertEqual(self.game.state, GameManager.STATE_VICTORY)
+
+        # 6. Test HUD wave pill clicking transitions to WAVE_SELECT
+        self.game.start_game()
+        self.game.hud.btn_wave_pill.callback()
+        self.assertEqual(self.game.state, GameManager.STATE_WAVE_SELECT)
+
+        # 7. Test Pause Menu and Wave Complete "SELECT WAVE" buttons
+        self.game.state = GameManager.STATE_PAUSED
+        self.game.menus.pause_waves_btn.callback()
+        self.assertEqual(self.game.state, GameManager.STATE_WAVE_SELECT)
+
+        self.game.state = GameManager.STATE_WAVE_COMPLETE
+        self.game.menus.wc_waves_btn.callback()
+        self.assertEqual(self.game.state, GameManager.STATE_WAVE_SELECT)
+
+        # 8. Test keyboard shortcuts [ and ]
+        self.game.select_and_start_wave(10)
+        event_right_bracket = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_RIGHTBRACKET)
+        pygame.event.post(event_right_bracket)
+        self.game.handle_events()
+        self.assertEqual(self.game.wave_manager.current_wave, 11)
+
+        event_left_bracket = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_LEFTBRACKET)
+        pygame.event.post(event_left_bracket)
+        self.game.handle_events()
+        self.assertEqual(self.game.wave_manager.current_wave, 10)
+
+        # 9. Test draw calls for all screens with new widgets
+        for st in (GameManager.STATE_PLAYING, GameManager.STATE_PAUSED, GameManager.STATE_WAVE_COMPLETE,
+                   GameManager.STATE_WAVE_SELECT, GameManager.STATE_VICTORY):
+            self.game.set_state(st)
+            self.game.draw()
+
 
 if __name__ == "__main__":
     unittest.main()
