@@ -1,16 +1,4 @@
-"""
-defense_defenders/ui/algorithm_lab.py
 
-This module implements the Algorithm Lab educational inspection panel.
-Toggled via the 'L' key or the HUD button, it visualizes the live data structures
-(FIFO Queue contents, Max-Heap threat rankings, Greedy distance calculations)
-in real time, along with theoretical time/space complexities and Viva Q&A notes.
-
-Modules that interact with this:
-- defense/targeting.py (supplies get_inspection_stats)
-- game/game_manager.py (handles open/close toggle)
-- ui/buttons.py (uses Button for tab selection and close)
-"""
 
 import pygame
 from config import (
