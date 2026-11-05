@@ -25,23 +25,42 @@ if PROJECT_DIR not in sys.path:
 
 import pygame
 import unittest
-from game.game_manager import GameManager
-from entities.enemy import Enemy
-from config import (
-    ARENA_LEFT,
-    ARENA_RIGHT,
-    ARENA_TOP,
-    ARENA_BOTTOM,
-    TOWER_RADIUS,
-    TOWER_MAX_HEARTS,
-    TOWER_MIN_FIRE_COOLDOWN,
-    TARGET_MODE_QUEUE,
-    TARGET_MODE_HEAP,
-    TARGET_MODE_GREEDY,
-    SPEED_1X,
-    SPEED_2X,
-    SPEED_3X,
-)
+try:
+    from defense_defenders.game.game_manager import GameManager
+    from defense_defenders.entities.enemy import Enemy
+    from defense_defenders.config import (
+        ARENA_LEFT,
+        ARENA_RIGHT,
+        ARENA_TOP,
+        ARENA_BOTTOM,
+        TOWER_RADIUS,
+        TOWER_MAX_HEARTS,
+        TOWER_MIN_FIRE_COOLDOWN,
+        TARGET_MODE_QUEUE,
+        TARGET_MODE_HEAP,
+        TARGET_MODE_GREEDY,
+        SPEED_1X,
+        SPEED_2X,
+        SPEED_3X,
+    )
+except ImportError:
+    from game.game_manager import GameManager
+    from entities.enemy import Enemy
+    from config import (
+        ARENA_LEFT,
+        ARENA_RIGHT,
+        ARENA_TOP,
+        ARENA_BOTTOM,
+        TOWER_RADIUS,
+        TOWER_MAX_HEARTS,
+        TOWER_MIN_FIRE_COOLDOWN,
+        TARGET_MODE_QUEUE,
+        TARGET_MODE_HEAP,
+        TARGET_MODE_GREEDY,
+        SPEED_1X,
+        SPEED_2X,
+        SPEED_3X,
+    )
 
 
 class TestGameplayRequirements(unittest.TestCase):
