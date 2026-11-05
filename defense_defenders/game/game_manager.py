@@ -177,6 +177,14 @@ class GameManager:
         if not self.headless:
             pygame.display.toggle_fullscreen()
 
+    def exit_fullscreen(self) -> None:
+        """Exit fullscreen mode if currently in fullscreen."""
+        if not self.headless:
+            # Check if currently fullscreen
+            is_fullscreen = bool(self.screen.get_flags() & pygame.FULLSCREEN)
+            if is_fullscreen:
+                pygame.display.toggle_fullscreen()
+
     def toggle_pause(self) -> None:
         """Toggle pause state."""
         if self.state == self.STATE_PLAYING:
@@ -251,7 +259,9 @@ class GameManager:
 
             # Keyboard Shortcuts
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_f or event.key == pygame.K_F11:
+                if event.key == pygame.K_ESCAPE:
+                    self.exit_fullscreen()
+                elif event.key == pygame.K_f or event.key == pygame.K_F11:
                     self.toggle_fullscreen()
                 elif event.key == pygame.K_p:
                     self.toggle_pause()

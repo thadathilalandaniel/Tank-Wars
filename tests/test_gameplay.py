@@ -280,6 +280,11 @@ class TestGameplayRequirements(unittest.TestCase):
             self.game.set_state(st)
             self.game.draw()
 
+        # 10. Test Escape key event handling (exit fullscreen)
+        event_esc = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_ESCAPE)
+        pygame.event.post(event_esc)
+        self.game.handle_events()
+
 
 if __name__ == "__main__":
     unittest.main()
