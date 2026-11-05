@@ -23,6 +23,7 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 FPS = 60
 WINDOW_TITLE = "Tank Wars - Tactical Tower Defense"
+FULLSCREEN = True
 
 # Arena Boundary (Tower movement and enemy target area)
 # Playable arena sits between HUD top (height ~70px) and Upgrade tray bottom (height ~140px)

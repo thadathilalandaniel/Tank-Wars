@@ -16,6 +16,7 @@ from config import (
     SCREEN_HEIGHT,
     FPS,
     WINDOW_TITLE,
+    FULLSCREEN,
     SPEED_1X,
     SPEED_2X,
     SPEED_3X,
@@ -59,7 +60,8 @@ class GameManager:
 
         # Display & Clock
         if not self.headless:
-            self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+            flags = (pygame.FULLSCREEN | pygame.SCALED) if FULLSCREEN else pygame.SCALED
+            self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags)
             pygame.display.set_caption(WINDOW_TITLE)
         else:
             self.screen = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -170,6 +172,11 @@ class GameManager:
         self.blast.reset()
         self.wave_manager.reset_to_wave(wave_num)
 
+    def toggle_fullscreen(self) -> None:
+        """Toggle between fullscreen and windowed display mode."""
+        if not self.headless:
+            pygame.display.toggle_fullscreen()
+
     def toggle_pause(self) -> None:
         """Toggle pause state."""
         if self.state == self.STATE_PLAYING:
@@ -244,7 +251,9 @@ class GameManager:
 
             # Keyboard Shortcuts
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
+                if event.key == pygame.K_f or event.key == pygame.K_F11:
+                    self.toggle_fullscreen()
+                elif event.key == pygame.K_p:
                     self.toggle_pause()
                 elif event.key == pygame.K_m:
                     self.toggle_sound()
