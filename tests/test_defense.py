@@ -20,10 +20,14 @@ import unittest
 PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "defense_defenders"))
 if PROJECT_DIR not in sys.path:
     sys.path.insert(0, PROJECT_DIR)
-
+    
+# pyrefly: ignore[missing-import]
 from defense.queue_ds import Queue
+# pyrefly: ignore[missing-import]
 from defense.priority_queue import MaxHeap, calculate_threat
+# pyrefly: ignore[missing-import]
 from defense.greedy_targeting import find_nearest_enemy
+# pyrefly: ignore[missing-import]
 from defense.targeting import TargetingDispatcher, MODE_QUEUE, MODE_PRIORITY_QUEUE, MODE_GREEDY
 
 

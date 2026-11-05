@@ -25,7 +25,9 @@ if PROJECT_DIR not in sys.path:
     sys.path.insert(0, PROJECT_DIR)
 
 import pygame
+# pyrefly: ignore[missing-import]
 from game.game_manager import GameManager
+# pyrefly: ignore[missing-import]
 from config import TARGET_MODE_QUEUE, TARGET_MODE_HEAP, TARGET_MODE_GREEDY
 
 
